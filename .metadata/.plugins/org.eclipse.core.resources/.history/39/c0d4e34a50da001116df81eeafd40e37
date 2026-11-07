@@ -1,0 +1,109 @@
+package com.klef.soa.test;
+
+
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import com.klef.soa.entity.PetrolBill;
+import com.klef.soa.repository.PetrolBillRepository;
+
+@SpringBootTest
+class PetrolBillTest 
+{
+    @Autowired
+    private PetrolBillRepository repository;
+
+    @Test
+    void testFindAllPetrolBills() 
+    {
+        List<PetrolBill> bills = repository.findAll();
+        assertNotNull(bills);
+        assertFalse(bills.isEmpty());
+        System.out.println("Total Petrol Bills: " + bills.size());
+    }
+
+    @Test
+    void testFindPetrolBillById() 
+    {
+        Optional<PetrolBill> bill = repository.findById(1L);
+        assertTrue(bill.isPresent());
+        assertEquals(1L, bill.get().getPetrolBillId());
+        System.out.println("Petrol Bill ID: " + bill.get().getPetrolBillId());
+        System.out.println("Name: " + bill.get().getName());
+    }
+
+    @Test
+    void testFindPetrolBillByType() 
+    {
+        List<PetrolBill> bills = repository.findByType("petrol");
+        assertNotNull(bills);
+        assertFalse(bills.isEmpty());
+        System.out.println("Type: " + bills.get(0).getType());
+        System.out.println("Status: " + bills.get(0).getStatus());
+    }
+
+    @Test
+    void testFindPetrolBillByInvalidType() 
+    {
+        List<PetrolBill> bills = repository.findByType("notfoundtype");
+        assertTrue(bills.isEmpty());
+    }
+
+    @Test
+    void testDatabaseConnection() 
+    {
+        long count = repository.count();
+        assertTrue(count >= 0);
+        System.out.println("Total Petrol Bills in Database: " + count);
+    }
+
+    @Test
+    void testPetrolBillDetails() 
+    {
+        Optional<PetrolBill> bill = repository.findById(1L);
+        assertTrue(bill.isPresent());
+        PetrolBill foundBill = bill.get();
+        assertNotNull(foundBill.getName());
+        assertNotNull(foundBill.getType());
+        assertNotNull(foundBill.getLocation());
+        assertNotNull(foundBill.getStatus());
+        System.out.println("Name: " + foundBill.getName());
+        System.out.println("Type: " + foundBill.getType());
+        System.out.println("Location: " + foundBill.getLocation());
+    }
+
+    @Test
+    void testPetrolBillStatus() 
+    {
+        Optional<PetrolBill> bill = repository.findById(1L);
+        assertTrue(bill.isPresent());
+        assertEquals("full", bill.get().getStatus());
+        System.out.println("Status: " + bill.get().getStatus());
+    }
+
+    @Test
+    void testTotalPetrolBillCount() 
+    {
+        long count = repository.count();
+        assertTrue(count > 0);
+    }
+    
+    @Test
+    void testPetrolBillByName()
+    {
+        List<PetrolBill> bills = repository.findByName("klu");
+        assertNotNull(bills);
+        assertFalse(bills.isEmpty());
+        assertEquals("klu", bills.get(0).getName());
+    }
+}
